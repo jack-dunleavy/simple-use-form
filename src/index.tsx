@@ -4,7 +4,6 @@ import {
   getFieldValue,
   getInitialStateFromProps,
   getSubmitHandler,
-  getTypeValue,
   getUpdatedFormState,
   isFormValid,
   markFieldAsBlurred,
@@ -36,10 +35,7 @@ export default <T extends FieldConfig>(
 
   const getFocusHandlers = React.useCallback(
     (fieldName: string) => {
-      if (
-        fieldConfig[fieldName].type === "select" ||
-        fieldConfig[fieldName].type === "checkbox"
-      ) {
+      if (fieldConfig[fieldName].type === "checkbox") {
         return {};
       }
 
@@ -52,11 +48,12 @@ export default <T extends FieldConfig>(
   );
 
   const fields = {} as { [key in keyof T]: FieldOutput };
-
+  getFieldValue;
   for (let fieldName in fieldConfig) {
     setProperty(fields, fieldName, {
+      value: formState[fieldName].value.toString(),
       props: {
-        ...getTypeValue(fieldName, fieldConfig),
+        type: fieldConfig[fieldName].type,
         ...getFieldValue(fieldName, fieldConfig, formState[fieldName].value),
         onChange: (
           e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

@@ -84,38 +84,6 @@ describe("The useForm hook", () => {
           ).not.toBeDefined();
         });
       });
-
-      describe("For 'select' elements", () => {
-        it("should return the correct fields", () => {
-          const { result } = renderHook(() =>
-            useForm({
-              testField: {
-                type: "select",
-              },
-            })
-          );
-
-          expect(result.current.fields).toMatchObject({
-            testField: {
-              props: {
-                value: "",
-                onChange: expect.any(Function),
-              },
-              isTouched: false,
-              isUntouched: true,
-              isPristine: true,
-              isDirty: false,
-            },
-          });
-
-          expect(
-            result.current.fields.testField.props.onBlur
-          ).not.toBeDefined();
-          expect(
-            result.current.fields.testField.props.onFocus
-          ).not.toBeDefined();
-        });
-      });
     });
 
     describe("The touched / dirty states", () => {
@@ -156,25 +124,6 @@ describe("The useForm hook", () => {
               target: { checked: true, nodeName: "INPUT" },
             } as ChangeEvent<HTMLInputElement>);
           });
-
-          expect(result.current.fields.testField.isTouched).toBe(true);
-          expect(result.current.fields.testField.isDirty).toBe(true);
-          expect(result.current.fields.testField.isUntouched).toBe(false);
-          expect(result.current.fields.testField.isPristine).toBe(false);
-        });
-      });
-
-      describe("For 'select' elements", () => {
-        it("should mark the field as 'touched' and 'dirty' onChange", () => {
-          const { result } = renderHook(() =>
-            useForm({
-              testField: {
-                type: "select",
-              },
-            })
-          );
-
-          sendSelectChangeEvent(result, "testField", "selected value");
 
           expect(result.current.fields.testField.isTouched).toBe(true);
           expect(result.current.fields.testField.isDirty).toBe(true);

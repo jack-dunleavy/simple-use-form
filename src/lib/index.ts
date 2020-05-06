@@ -44,30 +44,18 @@ export const getFieldValue = (
   field: string,
   fields: FieldConfig,
   stateValue: string | boolean
-): { checked: boolean } | { value: string } => {
+): { checked: boolean; value: string } | { value: string } => {
   const configType = fields[field].type;
 
   if (configType === "checkbox") {
     return {
+      value: stateValue.toString(),
       checked: stateValue as boolean,
     };
   }
 
   return {
     value: stateValue as string,
-  };
-};
-
-export const getTypeValue = (
-  field: string,
-  fields: FieldConfig
-): { type: "text" | "password" | "checkbox" } | {} => {
-  if (fields[field].type === "select") {
-    return {};
-  }
-
-  return {
-    type: fields[field].type,
   };
 };
 
@@ -149,7 +137,6 @@ export const markFieldAsFocussed = (field: string, formState: FormState) => {
 
 export const getFieldMetadata = (field: string, formState: FormState) => {
   return {
-    value: formState[field].value,
     isValid: formState[field].isValid,
     isFocussed: formState[field].isFocussed,
     isUntouched: formState[field].isUntouched,

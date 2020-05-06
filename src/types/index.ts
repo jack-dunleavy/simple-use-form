@@ -4,7 +4,7 @@ export interface FormConfig {
 }
 
 export interface FieldConfig {
-  [key: string]: TextFieldConfig | CheckboxFieldConfig | SelectFieldConfig;
+  [key: string]: TextFieldConfig | CheckboxFieldConfig;
 }
 
 export type FormOptions = Partial<{
@@ -12,10 +12,7 @@ export type FormOptions = Partial<{
   validationMode: "onChange" | "onSubmit";
 }>;
 
-export type TestingConfigUnion =
-  | TextFieldConfig
-  | CheckboxFieldConfig
-  | SelectFieldConfig;
+export type TestingConfigUnion = TextFieldConfig | CheckboxFieldConfig;
 
 export interface TextFieldConfig {
   type: "text" | "password";
@@ -32,13 +29,6 @@ export interface TextFieldConfig {
 export interface CheckboxFieldConfig {
   type: "checkbox";
   validation?: {};
-}
-
-export interface SelectFieldConfig {
-  type: "select";
-  validation?: {
-    required?: boolean;
-  };
 }
 
 export interface FormOutput<T extends FieldConfig> {
@@ -82,7 +72,7 @@ interface FieldProps {
   onBlur?: () => void;
   checked?: boolean;
   type?: string;
-  value?: string;
+  value: string;
 }
 
 export interface FormState {
