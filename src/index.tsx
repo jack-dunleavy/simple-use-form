@@ -1,20 +1,32 @@
 import * as React from "react";
 import {
+  getFieldMetadata,
   getFieldValue,
   getInitialStateFromProps,
+  getSubmitHandler,
   getTypeValue,
   getUpdatedFormState,
-  markFieldAsTouched,
+  isFormValid,
+  markFieldAsBlurred,
+  markFieldAsFocussed,
 } from "./lib";
-import { isFieldValid } from "./lib/validation";
-import { FieldConfig, FieldOutput, FormOutput, FormState } from "./types";
+import {
+  FieldConfig,
+  FieldOutput,
+  FormConfig,
+  FormOptions,
+  FormOutput,
+  FormState,
+} from "./types";
 
 const setProperty = <T, K extends keyof T>(obj: T, key: K, value: T[K]) => {
   obj[key] = value;
 };
 
 export const useForm = <T extends FieldConfig>(
-  fieldConfig: T
+  fieldConfig: T,
+  formConfig: FormConfig = {},
+  formOptions: FormOptions = {}
 ): FormOutput<T> => {
   const [formState, setFormState] = React.useState<FormState>(
     getInitialStateFromProps(fieldConfig)
@@ -30,8 +42,8 @@ export const useForm = <T extends FieldConfig>(
       }
 
       return {
-        onBlur: () => setFormState(markFieldAsTouched(fieldName, formState)),
-        onFocus: () => {},
+        onBlur: () => setFormState(markFieldAsBlurred(fieldName, formState)),
+        onFocus: () => setFormState(markFieldAsFocussed(fieldName, formState)),
       };
     },
     [formState, fieldConfig]
@@ -48,19 +60,42 @@ export const useForm = <T extends FieldConfig>(
           e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
         ) =>
           setFormState(
-            getUpdatedFormState(fieldName, fieldConfig, formState, e)
+            getUpdatedFormState(
+              fieldName,
+              fieldConfig,
+              formState,
+              formOptions,
+              e
+            )
           ),
         ...getFocusHandlers(fieldName),
       },
-      isValid: isFieldValid(fieldName, fieldConfig, formState[fieldName].value),
-      isUntouched: formState[fieldName].isUntouched,
-      isTouched: formState[fieldName].isTouched,
-      isPristine: formState[fieldName].isPristine,
-      isDirty: formState[fieldName].isDirty,
+      ...getFieldMetadata(fieldName, formState),
     });
   }
 
   return {
     fields,
+    form: {
+      isValid: isFormValid(fields),
+      reset: () => setFormState(getInitialStateFromProps(fieldConfig)),
+      props: {
+        ...getSubmitHandler(
+          fields,
+          fieldConfig,
+          formConfig,
+          formOptions,
+          formState,
+          setFormState
+        ),
+      },
+    },
+    submitButton: {
+      props: {
+        type: "submit",
+        disabled: !isFormValid(fields),
+      },
+      isDisabled: !isFormValid(fields),
+    },
   };
 };

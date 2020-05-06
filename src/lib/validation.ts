@@ -40,6 +40,10 @@ export const isFieldValid = (
     if (validators.isNumeric && isNaN(Number(stateValue))) {
       return false;
     }
+
+    if (validators.custom && !validators.custom(stateValue)) {
+      return false;
+    }
   }
 
   if (isSelectFieldConfig(config)) {

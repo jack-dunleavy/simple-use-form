@@ -1,25 +1,34 @@
-import { FieldConfig, FormState } from "../types";
+import {
+  FieldConfig,
+  FormConfig,
+  FormOptions,
+  FormState,
+  InternalFields,
+} from "../types";
 import { isInputElement, isSelectElement } from "../types/guards";
+import { isFieldValid } from "./validation";
 
 const getInitialStateForField = (field: string, fields: FieldConfig) => {
   const configType = fields[field].type;
+  const sharedFields = {
+    isFocussed: false,
+    isUntouched: true,
+    isTouched: false,
+    isPristine: true,
+    isDirty: false,
+  };
 
   switch (configType) {
     case "checkbox":
       return {
+        ...sharedFields,
         value: false,
-        isUntouched: true,
-        isTouched: false,
-        isPristine: true,
-        isDirty: false,
       };
     default:
       return {
         value: "",
-        isUntouched: true,
-        isTouched: false,
-        isPristine: true,
-        isDirty: false,
+        ...sharedFields,
+        isValid: isFieldValid(field, fields, ""),
       };
   }
 };
@@ -66,6 +75,7 @@ export const getUpdatedFormState = (
   field: string,
   fields: FieldConfig,
   formState: FormState,
+  formOptions: FormOptions,
   changeEvent: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 ): FormState => {
   const configType = fields[field].type;
@@ -91,6 +101,10 @@ export const getUpdatedFormState = (
         isPristine: false,
         isTouched: true,
         isUntouched: false,
+        isValid:
+          formOptions.validationMode === "onSubmit"
+            ? formState[field].isValid
+            : isFieldValid(field, fields, changeEvent.target.value),
         value: changeEvent.target.value,
       },
     };
@@ -102,6 +116,10 @@ export const getUpdatedFormState = (
         ...formState[field],
         isDirty: true,
         isPristine: false,
+        isValid:
+          formOptions.validationMode === "onSubmit"
+            ? formState[field].isValid
+            : isFieldValid(field, fields, changeEvent.target.value),
         value: changeEvent.target.value,
       },
     };
@@ -109,9 +127,101 @@ export const getUpdatedFormState = (
 };
 
 // On text input blur mark the field as touched
-export const markFieldAsTouched = (field: string, formState: FormState) => {
+export const markFieldAsBlurred = (field: string, formState: FormState) => {
   return {
     ...formState,
-    [field]: { ...formState[field], isTouched: true, isUntouched: false },
+    [field]: {
+      ...formState[field],
+      isFocussed: false,
+      isTouched: true,
+      isUntouched: false,
+    },
+  };
+};
+
+// On text input focus mark the field as focussed
+export const markFieldAsFocussed = (field: string, formState: FormState) => {
+  return {
+    ...formState,
+    [field]: { ...formState[field], isFocussed: true },
+  };
+};
+
+export const getFieldMetadata = (field: string, formState: FormState) => {
+  return {
+    value: formState[field].value,
+    isValid: formState[field].isValid,
+    isFocussed: formState[field].isFocussed,
+    isUntouched: formState[field].isUntouched,
+    isTouched: formState[field].isTouched,
+    isPristine: formState[field].isPristine,
+    isDirty: formState[field].isDirty,
+  };
+};
+
+export const getSubmitHandler = (
+  fields: InternalFields,
+  fieldConfig: FieldConfig,
+  formConfig: FormConfig,
+  formOptions: FormOptions,
+  formState: FormState,
+  setFormState: React.Dispatch<React.SetStateAction<FormState>>
+) => {
+  if (formConfig.onSubmit) {
+    return {
+      onSubmit: () => {
+        if (formOptions.validationMode === "onSubmit") {
+          const { formIsValid, updatedFields } = validateForm(
+            fields,
+            fieldConfig
+          );
+
+          if (!formIsValid) {
+            setFormState(updatedFields);
+            return;
+          }
+        } else if (!isFormValid(fields)) {
+          return;
+        }
+
+        if (formConfig.onValidate && !formConfig.onValidate!(formState)) {
+          return;
+        }
+
+        formConfig.onSubmit!(formState);
+
+        if (formOptions.clearAfterSubmit) {
+          setFormState(getInitialStateFromProps(fieldConfig));
+        }
+      },
+    };
+  }
+
+  return {};
+};
+
+export const isFormValid = (fields: InternalFields) => {
+  return (
+    Object.values(fields)
+      .map((val) => val.isValid)
+      .indexOf(false) === -1
+  );
+};
+
+const validateForm = (
+  fields: InternalFields,
+  fieldConfig: FieldConfig
+): { formIsValid: boolean; updatedFields: InternalFields } => {
+  let formIsValid = true;
+
+  for (let field in fields) {
+    const fieldIsValid = isFieldValid(field, fieldConfig, fields[field].value);
+    formIsValid = false;
+    fields[field].isValid = fieldIsValid;
+  }
+
+  return {
+    formIsValid,
+    updatedFields: fields,
   };
 };
