@@ -1,18 +1,18 @@
 import { act, renderHook } from "@testing-library/react-hooks";
 import { ChangeEvent } from "react";
-import { useForm } from "./";
+import useForm from "./";
 import { FieldConfig } from "./types";
 
 describe("The useForm hook", () => {
   describe("The field level outputs", () => {
-    describe("The returned inputProps", () => {
+    describe("The returned props", () => {
       describe("For inputs of type 'text'", () => {
         it("should return the correct fields", () => {
           const { result } = renderHook(() => useForm(getFormConfig("text")));
 
           expect(result.current.fields).toMatchObject({
             testField: {
-              inputProps: {
+              props: {
                 value: "",
                 onChange: expect.any(Function),
                 onBlur: expect.any(Function),
@@ -36,7 +36,7 @@ describe("The useForm hook", () => {
 
           expect(result.current.fields).toMatchObject({
             testField: {
-              inputProps: {
+              props: {
                 value: "",
                 onChange: expect.any(Function),
                 onBlur: expect.any(Function),
@@ -64,7 +64,7 @@ describe("The useForm hook", () => {
 
           expect(result.current.fields).toMatchObject({
             testField: {
-              inputProps: {
+              props: {
                 onChange: expect.any(Function),
                 type: "checkbox",
                 checked: false,
@@ -77,10 +77,10 @@ describe("The useForm hook", () => {
           });
 
           expect(
-            result.current.fields.testField.inputProps.onBlur
+            result.current.fields.testField.props.onBlur
           ).not.toBeDefined();
           expect(
-            result.current.fields.testField.inputProps.onFocus
+            result.current.fields.testField.props.onFocus
           ).not.toBeDefined();
         });
       });
@@ -97,7 +97,7 @@ describe("The useForm hook", () => {
 
           expect(result.current.fields).toMatchObject({
             testField: {
-              inputProps: {
+              props: {
                 value: "",
                 onChange: expect.any(Function),
               },
@@ -109,10 +109,10 @@ describe("The useForm hook", () => {
           });
 
           expect(
-            result.current.fields.testField.inputProps.onBlur
+            result.current.fields.testField.props.onBlur
           ).not.toBeDefined();
           expect(
-            result.current.fields.testField.inputProps.onFocus
+            result.current.fields.testField.props.onFocus
           ).not.toBeDefined();
         });
       });
@@ -124,7 +124,7 @@ describe("The useForm hook", () => {
           const { result } = renderHook(() => useForm(getFormConfig("text")));
 
           act(() => {
-            result.current.fields.testField.inputProps.onBlur!();
+            result.current.fields.testField.props.onBlur!();
           });
 
           expect(result.current.fields.testField.isTouched).toBe(true);
@@ -152,7 +152,7 @@ describe("The useForm hook", () => {
           );
 
           act(() => {
-            result.current.fields.testField.inputProps.onChange({
+            result.current.fields.testField.props.onChange({
               target: { checked: true, nodeName: "INPUT" },
             } as ChangeEvent<HTMLInputElement>);
           });
@@ -192,13 +192,13 @@ describe("The useForm hook", () => {
           expect(result.current.fields.testField.isFocussed).toBe(false);
 
           act(() => {
-            result.current.fields.testField.inputProps.onFocus!();
+            result.current.fields.testField.props.onFocus!();
           });
 
           expect(result.current.fields.testField.isFocussed).toBe(true);
 
           act(() => {
-            result.current.fields.testField.inputProps.onBlur!();
+            result.current.fields.testField.props.onBlur!();
           });
 
           expect(result.current.fields.testField.isFocussed).toBe(false);
@@ -660,7 +660,7 @@ const sendInputChangeEvent = (
   newValue: string
 ) => {
   act(() => {
-    result.current.fields[fieldName].inputProps.onChange({
+    result.current.fields[fieldName].props.onChange({
       target: { value: newValue, nodeName: "INPUT" },
     } as ChangeEvent<HTMLInputElement>);
   });
@@ -675,7 +675,7 @@ const sendSelectChangeEvent = (
   newValue: string
 ) => {
   act(() => {
-    result.current.fields[fieldName].inputProps.onChange({
+    result.current.fields[fieldName].props.onChange({
       target: { value: newValue, nodeName: "SELECT" },
     } as ChangeEvent<HTMLInputElement>);
   });

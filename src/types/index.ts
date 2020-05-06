@@ -64,7 +64,7 @@ export interface InternalFields {
 }
 
 export interface FieldOutput {
-  inputProps: CheckboxInputProps | TextInputProps | SelectInputProps;
+  props: FieldProps;
   value: boolean | string;
   isFocussed: boolean;
   isValid: boolean;
@@ -74,25 +74,15 @@ export interface FieldOutput {
   isUntouched: boolean;
 }
 
-interface BaseInputProps {
+interface FieldProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
   onFocus?: () => void;
   onBlur?: () => void;
-}
-
-interface CheckboxInputProps extends BaseInputProps {
-  checked: boolean;
-}
-
-interface TextInputProps extends BaseInputProps {
-  type: string;
-  value: string;
-}
-
-interface SelectInputProps extends BaseInputProps {
-  value: string;
+  checked?: boolean;
+  type?: string;
+  value?: string;
 }
 
 export interface FormState {

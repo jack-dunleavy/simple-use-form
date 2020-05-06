@@ -23,7 +23,7 @@ const setProperty = <T, K extends keyof T>(obj: T, key: K, value: T[K]) => {
   obj[key] = value;
 };
 
-export type { FieldConfig, FormState } from "./types";
+export * from "./types";
 
 export default <T extends FieldConfig>(
   fieldConfig: T,
@@ -55,7 +55,7 @@ export default <T extends FieldConfig>(
 
   for (let fieldName in fieldConfig) {
     setProperty(fields, fieldName, {
-      inputProps: {
+      props: {
         ...getTypeValue(fieldName, fieldConfig),
         ...getFieldValue(fieldName, fieldConfig, formState[fieldName].value),
         onChange: (
