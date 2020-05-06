@@ -1,5 +1,5 @@
 import { FieldConfig } from "../types";
-import { isSelectFieldConfig, isTextFieldConfig } from "../types/guards";
+import { isTextFieldConfig } from "../types/guards";
 
 export const isFieldValid = (
   field: string,
@@ -42,18 +42,6 @@ export const isFieldValid = (
     }
 
     if (validators.custom && !validators.custom(stateValue)) {
-      return false;
-    }
-  }
-
-  if (isSelectFieldConfig(config)) {
-    const validators = config.validation;
-
-    if (!validators) {
-      return true;
-    }
-
-    if (validators.required && stateValue === "") {
       return false;
     }
   }

@@ -1,4 +1,4 @@
-import { CheckboxFieldConfig, SelectFieldConfig, TextFieldConfig } from ".";
+import { CheckboxFieldConfig, TextFieldConfig } from ".";
 
 export const isInputElement = (
   element: HTMLInputElement | HTMLSelectElement
@@ -13,13 +13,7 @@ export const isSelectElement = (
 };
 
 export const isTextFieldConfig = (
-  config: CheckboxFieldConfig | SelectFieldConfig | TextFieldConfig
+  config: CheckboxFieldConfig | TextFieldConfig
 ): config is TextFieldConfig => {
   return config.type === "text" || config.type === "password";
-};
-
-export const isSelectFieldConfig = (
-  config: CheckboxFieldConfig | SelectFieldConfig | TextFieldConfig
-): config is TextFieldConfig => {
-  return config.type === "select";
 };

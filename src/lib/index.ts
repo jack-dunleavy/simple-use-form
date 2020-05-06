@@ -5,7 +5,7 @@ import {
   FormState,
   InternalFields,
 } from "../types";
-import { isInputElement, isSelectElement } from "../types/guards";
+import { isInputElement } from "../types/guards";
 import { isFieldValid } from "./validation";
 
 const getInitialStateForField = (field: string, fields: FieldConfig) => {
@@ -79,21 +79,6 @@ export const getUpdatedFormState = (
         isTouched: true,
         isUntouched: false,
         value: changeEvent.target.checked,
-      },
-    };
-  } else if (isSelectElement(changeEvent.target)) {
-    return {
-      [field]: {
-        ...formState[field],
-        isDirty: true,
-        isPristine: false,
-        isTouched: true,
-        isUntouched: false,
-        isValid:
-          formOptions.validationMode === "onSubmit"
-            ? formState[field].isValid
-            : isFieldValid(field, fields, changeEvent.target.value),
-        value: changeEvent.target.value,
       },
     };
   } else {
