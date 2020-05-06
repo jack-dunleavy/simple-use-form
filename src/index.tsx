@@ -23,7 +23,9 @@ const setProperty = <T, K extends keyof T>(obj: T, key: K, value: T[K]) => {
   obj[key] = value;
 };
 
-export const useForm = <T extends FieldConfig>(
+export type { FieldConfig, FormState } from "./types";
+
+export default <T extends FieldConfig>(
   fieldConfig: T,
   formConfig: FormConfig = {},
   formOptions: FormOptions = {}
