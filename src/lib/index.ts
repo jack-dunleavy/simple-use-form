@@ -141,7 +141,9 @@ export const getSubmitHandler = (
 ) => {
   if (formConfig.onSubmit) {
     return {
-      onSubmit: () => {
+      onSubmit: (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
         if (formOptions.validationMode === "onSubmit") {
           const { formIsValid, updatedFields } = validateForm(
             fields,

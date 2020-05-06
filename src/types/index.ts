@@ -44,7 +44,7 @@ export interface FormOutput<T extends FieldConfig> {
     isValid: boolean;
     reset: () => void;
     props: {
-      onSubmit?: () => void;
+      onSubmit?: (e: React.ChangeEvent<HTMLFormElement>) => void;
     };
   };
 }

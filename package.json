@@ -1,6 +1,6 @@
 {
   "name": "simple-use-form",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Simple form state management for React forms",
   "author": "jack-dunleavy",
   "license": "MIT",
