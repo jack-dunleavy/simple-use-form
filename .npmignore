@@ -5,3 +5,5 @@ tsconfig.*
 .editorconfig
 .env
 .travis.yml
+
+example
